@@ -1,0 +1,46 @@
+version: '3'
+
+services:
+  node1:
+    build: .
+    hostname: node1
+    ports:
+      - "2222:22"
+    networks:
+      cluster_net:
+        ipv4_address: 172.20.0.2
+
+  node2:
+    build: .
+    hostname: node2
+    networks:
+      cluster_net:
+        ipv4_address: 172.20.0.3
+
+  node3:
+    build: .
+    hostname: node3
+    networks:
+      cluster_net:
+        ipv4_address: 172.20.0.4
+
+  node4:
+    build: .
+    hostname: node4
+    networks:
+      cluster_net:
+        ipv4_address: 172.20.0.5
+
+  node5:
+    build: .
+    hostname: node5
+    networks:
+      cluster_net:
+        ipv4_address: 172.20.0.6
+
+networks:
+  cluster_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/24
