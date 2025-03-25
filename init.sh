@@ -1,11 +1,28 @@
+#!/bin/bash
+
+echo "==============================="
+echo "Proyecto Programacion Paralela"
+echo "==============================="
+
+# Solicitar la clave al usuario
+read -p "Ingrese la clave a buscar (solo caracteres alfanuméricos): " CLAVE
+
+# Validar la entrada
+if [[ ! "$CLAVE" =~ ^[a-zA-Z0-9]+$ ]]; then
+    echo "Error: La clave solo puede contener caracteres alfanuméricos."
+    exit 1
+fi
+
+# Crear el archivo clave.c con la clave proporcionada
+cat >clave.c <<EOF
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <omp.h>
 #include <mpi.h>
 
-#define MAX_LENGTH 3
-#define REAL_PASSWORD "123"
+#define MAX_LENGTH ${#CLAVE}
+#define REAL_PASSWORD "$CLAVE"
 #define CHAR_SET "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
 
 int clave_encontrada = 0;
@@ -91,3 +108,26 @@ int main(int argc, char **argv) {
     MPI_Finalize();
     return 0;
 }
+EOF
+
+echo "Detienendo los contenedores anteriores..."
+sudo docker stop $(sudo docker ps -aq) &>/dev/null
+
+echo "Eliminando los contenedores anteriores..."
+sudo docker rm $(sudo docker ps -aq) &>/dev/null
+
+echo "Eliminando nodos creados anteriormente..."
+sudo docker-compose down &>/dev/null
+
+echo "Eliminando las imagenes,contenedores,redes de docker"
+sudo docker system prune -a &>/dev/null
+
+# Construir y ejecutar
+echo "Construyendo contenedores..."
+sudo docker-compose build &>/dev/null
+
+echo "Iniciando cluster..."
+sudo docker-compose up -d
+
+echo "Ejecutando búsqueda de la clave..."
+sudo docker logs -f fuerza_bruta_paralela_node1_1 # | awk '/Iniciando/ {flag=1; next} flag'

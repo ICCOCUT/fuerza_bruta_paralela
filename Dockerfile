@@ -16,7 +16,7 @@ RUN mkdir -p /var/run/sshd && \
     sed -i 's/#PermitRootLogin.*/PermitRootLogin yes/' /etc/ssh/sshd_config && \
     sed -i 's@session\s*required\s*pam_loginuid.so@session optional pam_loginuid.so@g' /etc/pam.d/sshd && \
     echo "StrictHostKeyChecking no" >> /etc/ssh/ssh_config && \
-    echo "UserKnownHostsFile /dev/null" >> /etc/ssh/ssh_config
+    echo "UserKnownHostsFile /dev/null" >> /etc/ssh/ssh_config 2>/dev/null
 
 # Preparar entorno MPI
 RUN mkdir -p /root/.ssh && \

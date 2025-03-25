@@ -32,7 +32,7 @@ if [ "$HOSTNAME" = "node1" ]; then
     echo "Probando conexiones SSH..."
     for node in node2 node3 node4 node5; do
         if ssh -o BatchMode=yes root@$node echo "Conexión SSH a $node exitosa"; then
-            echo "SSH a $node configurado correctamente"
+            echo ""
         else
             echo "Fallo en SSH a $node"
             exit 1
@@ -43,10 +43,8 @@ if [ "$HOSTNAME" = "node1" ]; then
     mpirun --hostfile /app/hosts -np 5 \
         --mca plm_rsh_no_tree_spawn 1 \
         --mca btl_vader_single_copy_mechanism none \
-        /app/clave | tee /app/output.log
+        /app/clave | tee /app/output.log 
 
-    echo -e "\nRESULTADO FINAL:"
-    grep -A 5 -B 2 "¡CLAVE ENCONTRADA!" /app/output.log || echo "No se encontró la clave"
 else
     echo "Nodo $HOSTNAME esperando conexiones MPI..."
     tail -f /dev/null
